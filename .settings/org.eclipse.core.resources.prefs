@@ -1,3 +1,7 @@
 eclipse.preferences.version=1
-encoding//util/DiscuzRobot.py=utf-8
+encoding//crawler/base.py=utf8
+encoding//crawler/xiachufang.py=utf8
+encoding//util/discuzRobot.py=utf-8
+encoding//util/download.py=utf8
+encoding//util/mysqlconnector.py=utf-8
 encoding/<project>=UTF-8
