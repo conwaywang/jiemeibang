@@ -3,7 +3,7 @@
 '''
 Created on 2013-12-16
 
-@author: lenovo
+@author: conway
 '''
 
 import urllib2, urllib, cookielib, re, time
@@ -34,11 +34,13 @@ class DiscuzRobot:
         content = urllib2.urlopen(req).read()
         if self.userName in content:
             self.isLogon = True
-            print 'logon success!'
+            print self.userName, 'login success!'
             #print content
             self.initFormhashXq()
+            return True
         else:
-            print 'logon faild!'
+            print self.userName, 'login faild!'
+            return False
 
     def initFormhashXq(self):
         ''' 获取formhash和心情 '''
@@ -75,7 +77,7 @@ class DiscuzRobot:
         if subject in content:
             print 'publish success!'
         else:
-            print 'publish faild!'
+            print 'publish faild!\n'#, content
 
 
 '''
@@ -97,15 +99,7 @@ class DiscuzRobot:
 if __name__ == '__main__':
     robot = DiscuzRobot('http://184.82.118.42', u'红尘无痕', 'password4jiemeibang')
     robot.login()
-    #robot.sign()
-    #robot.speak()
-    robot.publish(40, "每日笑话", '''小骆：爸爸，为什麼我们要有驼峰呢？ 
-驼爸：因为沙漠中没有水，有驼峰才可以储存水分啊！ 
-小骆：爸爸，为什麼我们要有长长的毛呢？ 
-驼爸：因为沙漠中风沙大，我们必须靠它阻挡风砂，才看得见啊！ 
-小骆：爸爸，为什麼我们要有厚厚的蹄呢？ 
-驼爸：因为沙漠中都是沙，这样我们才站得稳啊！ 
-小骆：爸爸，最后一个问题，那我们在动物园干嘛呢？''');
+    robot.publish(00, "", '''小骆：''');
     #robot.reply(42, 9, " ", "小孩子越来越聪明")
     
     

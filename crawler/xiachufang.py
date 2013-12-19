@@ -1,10 +1,10 @@
 #-*-encoding: utf8 -*-
 import sys
 import re
-import os
-import time
+
 
 from base import BaseParser
+
 
 class XiaChuFang(BaseParser):
     '''
@@ -17,64 +17,60 @@ class XiaChuFang(BaseParser):
         BaseParser.__init__(self)
         self.name = "xiachufang"
         self.baseurl = "http://www.xiachufang.com/recipe/"        
-
-        #抽取内容存储文件名
-        #extract_file_name = self.extract_dir + "/" + self.name
-        #self.out_extract_file = open(extract_file_name, "a")
         
-        #html标记
-        self.htmltagreobj = re.compile("<[^>]+>")
-            
-    
     #
     def __del__(self):
-        #关闭抽取输出文件
-        #self.out_extract_file.close()
         pass
                
-    #下载一级页面
-    def doWork(self):   
-        #循环下载，生成一级页面URL
-        totalpagenum = 9
-        print totalpagenum
-        for i in range(0, totalpagenum+1):                   
-            url = "%s%d" %(self.baseurl, i)     
-            content = self.getContent(url)
-            items = self.getInfoItemFromContent(content)
-            print items['title'],'/n', items['text']
-            
-            #super(DoNews, self).writeInfoItem2File(info_item, self.out_extract_file) 
+    #获取指定页面
+    def getPageInfo(self, start):   
+        url = "%s%d" %(self.baseurl, start)     
+        content = self.getContent(url)
+        #print content
+        items = self.getInfoItemFromContent(content)
+        #print items['text']
+        return items
+        
         #
     def getInfoItemFromContent(self, content):
         info_item = {}
         
         #1                  
         articlecontent = self.getArticleContent(content)
+        if not articlecontent:
+            return None
+        #print 'articlecontent:', articlecontent, "\n\n"
         #title
-        title = self.getTitle(articlecontent)    
+        title = self.getTitle(articlecontent)   
+        if not title:
+            return None 
         #图片
         imgSrc = self.getFirstImageSrc(articlecontent)    
+        if not imgSrc:
+            return None
         #正文
-        text = self.getFormatText(content)
+        text = self.getFormatText(articlecontent)
+        if not text:
+            return None
+        #print "title:%s\nsrc:%s\ntext:%s\n" %(title, imgSrc, text)
        
-
-        info_item["text"] = "[img]%s[/img]%s" %(imgSrc, text)
+        info_item["text"] = "[img]%s[/img]\n\n%s" %(imgSrc, text)
         info_item["title"] = title
         info_item["img"] = imgSrc
         return info_item 
         
     #得到post的html范围
     def getArticleContent(self, content):
-        startarticle = content.find('<div itemtype="http://schema.org/Recipe" itemscope="">')
+        startarticle = content.find('<div itemscope itemtype="http://schema.org/Recipe">')
         if -1 == startarticle:
-            return ""
+            print "startarticle error"
+            return None
         end = content.find('<div class="print">', startarticle)
         if -1 == end:
             print "not find text end !"
             sys.exit(1)
             
         articlecontent = content[startarticle:end]
-        print articlecontent
         return articlecontent
         
     #得到标题
@@ -84,7 +80,7 @@ class XiaChuFang(BaseParser):
         if -1 != starttitle:
             endtitle = content.find('</h1>', starttitle)
             title = content[starttitle+39:endtitle]
-        
+            return title
         return title
     
     #得到发表时间
@@ -106,32 +102,35 @@ class XiaChuFang(BaseParser):
     #获取替换格式后的正文
     def getFormatText(self, content):
         start = content.find('<h2>')
-        end = content.find('<div class="print">', start)
         
-        if -1 == start or -1 == end:
+        if -1 == start:
             return ""
         #正文区间
-        content = content[start:end]
+        content = content[start:]
+        content = super(XiaChuFang, self).unEscape(content)
+        #print "content:%s" % content
         
-        re.sub("<h2>", "[size=5]", content)
-        re.sub("</h2>", "[/size]", content)
+        content = re.sub("<h2>", "[size=5]", content)
+        content = re.sub("</h2>", "[/size]", content)
         
         #table 处理
-        re.sub("<table[^>]+>", "[table=50%]", content)
-        re.sub("</table>", "[/table]", content)
-        re.sub("<tr>", "[tr]", content)
-        re.sub("</tr>", "[/tr]", content)
-        re.sub("<td[^>]+>", "[/td]", content)
-        re.sub("</td[^>]+>", "[/td]", content)
+        content = re.sub("<table[^>]+>", "[table=50%]", content)
+        content = re.sub("</table>", "[/table]", content)
+        content = re.sub("<tr>", "[tr]", content)
+        content = re.sub("</tr>", "[/tr]", content)
+        content = re.sub("<td[^>]+>", "[td]", content)
+        content = re.sub("</td>", "[/td]", content)
         
         #list
-        re.sub("<ol[^>]+>", "[list=1]", content)
-        re.sub("</ol>", "[/list]", content)
-        re.sub("<li[^>]+>", "[*]", content)
+        content = re.sub("<ol[^>]+>", "[list=1]", content)
+        content = re.sub("</ol>", "[/list]", content)
+        content = re.sub("<li[^>]+>[\n\r]*", "[*]", content)
         
-        #获取正文
-        text = super(XiaChuFang, self).getText(content)
+        content = re.sub("[  ]", "", content)
+        content = re.sub("\n+", "\n", content)
+        #去掉所有html标记
+        text = re.sub("<[^>]+>", "", content)
         return text
-                
-aa = XiaChuFang()
-aa.doWork()
+
+#aa = XiaChuFang()
+#aa.getPageInfo(1)

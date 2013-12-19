@@ -1,0 +1,5 @@
+[xiachufang]
+start = 8
+max_post_per_day = 2
+min_post_per_day = 2
+
