@@ -17,6 +17,7 @@ class BaseParser(object):
         #extract path
         self.extract_dir = "extract"
         #
+        
     
     #用时间戳设置前缀
     def setFilePrefix(self):
@@ -26,12 +27,13 @@ class BaseParser(object):
     #得到url或filename对应的文件内容。如果没有下载则下载并存储
     def getContent(self, url ,  charset="utf8"):
         content = self.download.get(url, charset)
+        #print content, "\n\n\n"
         #写入文件
         #filehandler = open(filename, "w")
         #filehandler.write(content.encode(charset))
         #filehandler.close()
             
-        content = content.decode(charset, "ignore")
+        #content = content.decode(charset, "ignore")
         return content
     
     #得到文件内容并返回

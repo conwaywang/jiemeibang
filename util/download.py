@@ -8,10 +8,11 @@ class Download(object):
         self.headers={'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6)Gecko/20091201 Firefox/3.5.6',  'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
 
     def get(self,url, encode="utf-8"):
-        print "+",url
+        #print "+",url
         content = urllib.urlopen(url).read().decode(encode, "ignore")
+
         #暂停
-        time.sleep(random.uniform(3,6))
+        #time.sleep(random.uniform(3,6))
         return content
         '''
         req = urllib2.Request(url, None, self.headers)

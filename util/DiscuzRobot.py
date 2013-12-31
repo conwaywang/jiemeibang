@@ -9,7 +9,9 @@ Created on 2013-12-16
 import urllib2, urllib, cookielib, re, time
 
 class DiscuzRobot:
-
+    #发表错误类型
+    __publish_errors = ["您当前的访问请求当中含有非法字符，已经被系统拒绝", "抱歉，您的帖子超过 10000 个字符的限制"]
+    
     def __init__(self, forumUrl, userName, password, proxy=None):
         ''' 初始化论坛url、用户名、密码和代理服务器 '''
         self.forumUrl = forumUrl
@@ -67,17 +69,31 @@ class DiscuzRobot:
         else:
             print 'reply faild!'
 
-    def publish(self, fid, subject=u'发个帖子测试一下下，嘻嘻~~~', msg=u'发个帖子测试一下下，嘻嘻~~~'):
+    def publish(self, fid, subject=u'title', msg=u'content'):
         ''' 发帖 '''
         url = self.forumUrl + '/forum.php?mod=post&action=newthread&fid={}&extra=&topicsubmit=yes'.format(fid)
         postData = urllib.urlencode({'formhash': self.formhash, 'message': msg, 'subject': subject, 'posttime':int(time.time()), 'addfeed':'1', 'allownoticeauthor':'1', 'checkbox':'0', 'newalbum':'', 'readperm':'', 'rewardfloor':'', 'rushreplyfrom':'', 'rushreplyto':'', 'save':'', 'stopfloor':'', 'typeid':'', 'uploadalbum':'', 'usesig':'1', 'wysiwyg':'0' })
         req = urllib2.Request(url, postData)
         content = urllib2.urlopen(req).read().decode('utf8')
         # print content
-        if subject in content:
-            print 'publish success!'
-        else:
-            print 'publish faild!\n'#, content
+        return self.parseResState(subject, content)
+    
+    #分析发表是否成功
+    def parseResState(self, subject, content):
+        if subject.strip() in content:
+            return 0
+        #是否在已知错误类型中
+        for i in range(0, len(DiscuzRobot.__publish_errors)):
+            print "\terror:", DiscuzRobot.__publish_errors[i]
+            return i+1
+        #未知错误类型
+        print content
+        return -1
+        
+        '''
+        <h1>Discuz! System Error</h1>
+<div class='info'><li>您当前的访问请求当中含有非法字符，已经被系统拒绝</li></div>
+        '''
 
 
 '''

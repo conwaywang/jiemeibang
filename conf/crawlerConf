@@ -1,5 +1,21 @@
+[crawler]
+url_file_name = ../conf/urls
+
 [xiachufang]
-start = 8
-max_post_per_day = 2
+start = 40
+max_post_per_day = 5
 min_post_per_day = 2
+
+[qiwen]
+max_post_per_day = 3
+
+[aimei]
+max_post_per_day = 3
+
+[joke]
+max_post_per_day = 3
+start = 25
+
+[neteasy]
+max_post_per_day = 3
 

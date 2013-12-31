@@ -28,6 +28,7 @@ class XiaChuFang(BaseParser):
         content = self.getContent(url)
         #print content
         items = self.getInfoItemFromContent(content)
+        items['url'] = url
         #print items['text']
         return items
         

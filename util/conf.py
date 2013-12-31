@@ -12,10 +12,8 @@ class Conf(object):
     def __init__(self, confPath):
         if not os.path.exists(confPath):
             return
-        #print "h1"
         self.confPath = confPath
         self.config = ConfigParser.ConfigParser()
-        #print "h2"
         self.config.readfp(open( confPath , "r"))
         
     def __del__(self):
