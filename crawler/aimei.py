@@ -37,25 +37,20 @@ class Aimei(BaseParser):
         BaseParser.__init__(self)
         #已获取并发表的集合
         self.__postedUrlSet = postedUrlSet        
-        #带获取url集合
-        self.__urlList = []
-        self.__index = 0
-        #当前爬取的板块
-        self.__artType = ""
         
     #设置新的类型
-    def initUrlPool(self, artType):
+    def initUrlPool(self, artType, start=None):
         #判断是否从当前类别取文章
-        if artType != None and self.__artType != artType: #新的类型
-            self.__artType = artType
-            self.__urlList = self.__getUrlPool(Aimei.urlMap[self.__artType])
-            self.__index = 0
+        if artType != None and self._artType != artType: #新的类型
+            self._artType = artType
+            self._urlList = self.__getUrlPool(Aimei.urlMap[self._artType])
+            self._index = 0
     
     #随机取一篇文章 infos有title,text, url    
     def getArticle(self):
-        while self.__index < len(self.__urlList):
-            url = self.__urlList[self.__index]
-            self.__index += 1
+        while self._index < len(self._urlList):
+            url = self._urlList[self._index]
+            self._index += 1
             if not self.__postedUrlSet or url not in self.__postedUrlSet:   #找到没有发表过的
                 infos = self.__getArticleInfo(url)
                 return infos

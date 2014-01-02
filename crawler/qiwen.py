@@ -18,28 +18,23 @@ class QiWen(BaseParser):
         self.baseUrl = "http://news.qq.com"
         self.oriUrl = "http://news.qq.com/newssh/qiwen.shtml"
         self.__postedSet = urlSet
-        
-        self.__urlList = [] #待爬取链接
-        self.__index = 0    #当前待爬取url的index
-        
-    def __del__(self):
-        pass
-    
-    def getQiwen(self):
-        if not self.__urlList:
-            self.__urlList = self.parseMain()
-            self.__index = 0
             
-        while self.__index < len(self.__urlList):
-            url = self.__urlList[self.__index]
-            self.__index += 1
+    def initUrlPool(self, artType, start=None):
+        self._urlList = self.__getUrlPool()
+        self._index = 0
+        self._artType = artType
+    
+    def getArticle(self):
+        while self._index < len(self._urlList):
+            url = self._urlList[self._index]
+            self._index += 1
             if not self.__postedSet or url not in self.__postedSet:
-                infos = self.__parseNews(url)
+                infos = self.__getArticleInfo(url)
                 return infos
         return None
 
     #分析主页面  提取新闻链接
-    def parseMain(self, timeInfo=None):
+    def __getUrlPool(self, timeInfo=None):
         urlList = []
         urlAll = []
 
@@ -59,12 +54,12 @@ class QiWen(BaseParser):
                 urlList.append(url)
             #print a.attr("href"), "\n"
             
-        if not urlList: #没找到当天的，则返回全部的
+        if not urlList or len(urlList)<3 : #没找到当天的，则返回全部的
             urlList = urlAll
         return urlList
     
     #分析新闻页面 提取内容
-    def  __parseNews(self, url):
+    def  __getArticleInfo(self, url):
         infos = {}
         infos['url'] = url
         content = self.getContent(url, "gbk")
@@ -95,4 +90,6 @@ class QiWen(BaseParser):
     
                 
 if __name__ == "__main__":
-    QiWen().getQiwen()
+    q = QiWen()
+    q.initUrlPool("qiwen")
+    q.getArticle()

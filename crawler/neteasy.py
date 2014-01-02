@@ -19,28 +19,23 @@ class NetEasyRank(BaseParser):
         self.baseurl = "http://news.163.com/rank/"     
         #
         self.__postedUrlSet = postedUrlSet
-        self.__urlPool = []
-        self.__index = 0   
         #要抽取的类别在页面中 div(.tabBox)的序号。根据这个抽取指定的信息块的url
         self.__typeIndexMap = {
               "ent":5,
               "news":1
               }
-    #
-    def __del__(self):
-        pass
     
     #初始化url pool
-    def initUrlPool(self, artType):
-        if not self.__urlPool:
-            self.__urlPool = self.__getUrlPool(self.__typeIndexMap[artType])
-            self.__index = 0
+    def initUrlPool(self, artType, start=None):
+        self._urlPool = self.__getUrlPool(self.__typeIndexMap[artType])
+        self._index = 0
+        self._artType = artType
                           
     #获取指定页面
     def getArticle(self):
-        while self.__index < len(self.__urlPool):
-            url = self.__urlPool[self.__index]
-            self.__index += 1
+        while self._index < len(self._urlPool):
+            url = self._urlPool[self._index]
+            self._index += 1
             if not self.__postedUrlSet or url not in self.__postedUrlSet:
                 infos = self.__getArticleInfo(url)
                 return infos

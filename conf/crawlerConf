@@ -2,20 +2,19 @@
 url_file_name = ../conf/urls
 
 [xiachufang]
-start = 40
-max_post_per_day = 5
-min_post_per_day = 2
+start = 52
+max_post_per_day = 2
 
 [qiwen]
-max_post_per_day = 3
+max_post_per_day = 2
 
 [aimei]
-max_post_per_day = 3
+max_post_per_day = 2
 
 [joke]
-max_post_per_day = 3
-start = 25
+max_post_per_day = 2
+start = 33
 
 [neteasy]
-max_post_per_day = 3
+max_post_per_day = 2
 

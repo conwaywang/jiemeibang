@@ -19,19 +19,17 @@ class Joke(BaseParser):
         self.__pageSize = 22
         
         self.__postedUrlSet = postUrls
-        self.__urlPool = []
-        self.__index = 0
     
     #
-    def initUrlPool(self, start):
-        if not self.__urlPool:
-            self.__urlPool = self.__getUrlPool(start)
-            self.__index = 0
-            
+    def initUrlPool(self, artType, start=None):
+        self._urlPool = self.__getUrlPool(start)
+        self._index = 0
+        self._artType = artType
+        
     def getArticle(self):
-        while self.__index < len(self.__urlPool):
-            url = self.__urlPool[self.__index]
-            self.__index += 1
+        while self._index < len(self._urlPool):
+            url = self._urlPool[self._index]
+            self._index += 1
             if not self.__postedUrlSet or url not in self.__postedUrlSet:  
                 infos = self.__getArticleInfo(url)
                 return infos

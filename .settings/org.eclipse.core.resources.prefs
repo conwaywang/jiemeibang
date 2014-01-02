@@ -1,5 +1,9 @@
 eclipse.preferences.version=1
+encoding//crawler/aimei.py=utf-8
 encoding//crawler/base.py=utf8
+encoding//crawler/joke.py=utf8
+encoding//crawler/neteasy.py=utf8
+encoding//crawler/qiwen.py=utf8
 encoding//crawler/xiachufang.py=utf8
 encoding//ctrl/post.py=utf-8
 encoding//util/conf.py=utf-8

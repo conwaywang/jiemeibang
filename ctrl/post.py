@@ -20,7 +20,7 @@ from crawler.joke import Joke
 from crawler.neteasy import NetEasyRank
 
 class Post():
-    fidMap = {"beauty":45, "emotion":41, "work":47, "baby":42, "ent":46, "news":2}
+    fidMap = {"beauty":45, "emotion":41, "work":47, "baby":42, "ent":46, "news":2, "joke":40, "qiwen":39, "meishi":43}
     
     def __init__(self):
         self.crawlerConf = Conf("../conf/crawlerConf")
@@ -39,8 +39,7 @@ class Post():
         #下厨房
         self.xiachufang = XiaChuFang()
         self.start = int(self.crawlerConf.get("xiachufang", "start"))
-        self.minPerDay = int(self.crawlerConf.get("xiachufang", "min_post_per_day"))
-        self.maxPerDay = int(self.crawlerConf.get("xiachufang", "max_post_per_day"))  
+        self.maxMeishiPerDay = int(self.crawlerConf.get("xiachufang", "max_post_per_day"))
         
         #奇闻
         self.qiwen = QiWen(self.__postedSet)
@@ -101,16 +100,14 @@ class Post():
         return robotList
                 
         
-    def postCtrlXiachufang(self):
-        fid = 43    #板块id
-        #读取指定范围内的篇数
-        num = random.randint(self.minPerDay, self.maxPerDay)
-        end = self.start + num
+    def postCtrlXiachufang(self, artType):
+        fid = Post.fidMap[artType] #板块ID
         
         print "\n\n---------start post chufang----------------"
-        for i in range(self.start, end):
+        self.xiachufang.initUrlPool(artType, self.start)
+        for i in range(0, self.maxMeishiPerDay):
             print "--%d--" %(i)
-            textInfo = self.xiachufang.getPageInfo(i)
+            textInfo = self.xiachufang.getArticle()
             if not textInfo:   #信息获取出错
                 continue
             #print "title:%s\ntext:%s\n" %(infos['title'], infos['text'])
@@ -122,16 +119,17 @@ class Post():
             else:
                 print "publish failed: ", textInfo['url']
         #保存配置    
-        self.crawlerConf.set("xiachufang", "start", end)
+        self.crawlerConf.set("xiachufang", "start", self.start + self.maxMeishiPerDay)
        
     #发表奇闻异事 
-    def postCtrlQiWen(self):
-        fid = 39 #板块ID
+    def postCtrlQiWen(self, artType):
+        fid = Post.fidMap[artType] #板块ID
         
         print "\n\n---------start post qiwen----------------"
+        self.qiwen.initUrlPool(artType)
         for i in range(0, self.maxQiwenPerDay):
             print "--%d--" %(i)
-            textInfo = self.qiwen.getQiwen()
+            textInfo = self.qiwen.getArticle()
             if not textInfo:
                 break #跳出
             res = self.post(fid, textInfo['title'], textInfo['text'])
@@ -163,11 +161,11 @@ class Post():
                 print "publish failed: ", textInfo['url']
         
     #发表笑话
-    def postJoke(self):
-        fid = 40  
+    def postJoke(self, artType):
+        fid = Post.fidMap[artType] #板块ID  
         
         print "\n\n---------jokes----------------" 
-        self.joke.initUrlPool(self.jokeStart)
+        self.joke.initUrlPool(artType, self.jokeStart)
         for i in range(0, self.maxJokePerDay):
             print "--%d--" %(i)
             textInfo = self.joke.getArticle()
@@ -220,13 +218,14 @@ class Post():
             
 if __name__ == '__main__':
     postCtrl = Post()
-    #postCtrl.postCtrlXiachufang()
-    #postCtrl.postCtrlQiWen()
-    #postCtrl.postAimei("beauty")
+    #postCtrl.postCtrlXiachufang("meishi")
+    #postCtrl.postCtrlQiWen("qiwen")
+    postCtrl.postAimei("beauty")
     #postCtrl.postAimei("emotion")
-    #postCtrl.postAimei("work")
+    postCtrl.postAimei("work")
     #postCtrl.postAimei("baby")
-    #postCtrl.postJoke()
-    postCtrl.postNeteasy("ent")
+    #postCtrl.postJoke("joke")
+    #postCtrl.postNeteasy("ent")
+    #postCtrl.postNeteasy("news")
                 
             

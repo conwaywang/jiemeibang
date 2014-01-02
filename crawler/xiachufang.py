@@ -16,24 +16,27 @@ class XiaChuFang(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
         self.name = "xiachufang"
-        self.baseurl = "http://www.xiachufang.com/recipe/"        
+        self.baseurl = "http://www.xiachufang.com/recipe/"  
+        #起始位置
+        self.__start = 0      
         
     #
-    def __del__(self):
-        pass
-               
+    def initUrlPool(self, artType, start=None):
+        self.__start = start
+        self._artType = artType
+         
     #获取指定页面
-    def getPageInfo(self, start):   
-        url = "%s%d" %(self.baseurl, start)     
+    def getArticle(self ):   
+        url = "%s%d" %(self.baseurl, self.__start)
+        self.__start += 1     
         content = self.getContent(url)
-        #print content
-        items = self.getInfoItemFromContent(content)
+        items = self.__getArticleInfo(content)
         items['url'] = url
         #print items['text']
         return items
-        
-        #
-    def getInfoItemFromContent(self, content):
+    
+    #
+    def __getArticleInfo(self, content):
         info_item = {}
         
         #1                  
@@ -134,4 +137,4 @@ class XiaChuFang(BaseParser):
         return text
 
 #aa = XiaChuFang()
-#aa.getPageInfo(1)
+#aa.getArticle(1)

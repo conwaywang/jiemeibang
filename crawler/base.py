@@ -3,6 +3,7 @@ import re
 import os
 import time,datetime
 
+from abc import ABCMeta,abstractmethod
 from util.download import Download
 
 class BaseParser(object):
@@ -10,14 +11,12 @@ class BaseParser(object):
         edit:20120524    时间戳作为文件名前缀
     '''
     def __init__(self):     
-        
         #页面下载器
-        self.download = Download()
-
-        #extract path
-        self.extract_dir = "extract"
-        #
+        self.__download = Download()
         
+        self._artType = ""  #板块
+        self._urlList = []  #待爬取链接
+        self._index = 0     #当前待爬取url的index
     
     #用时间戳设置前缀
     def setFilePrefix(self):
@@ -26,7 +25,7 @@ class BaseParser(object):
     
     #得到url或filename对应的文件内容。如果没有下载则下载并存储
     def getContent(self, url ,  charset="utf8"):
-        content = self.download.get(url, charset)
+        content = self.__download.get(url, charset)
         #print content, "\n\n\n"
         #写入文件
         #filehandler = open(filename, "w")
@@ -70,9 +69,7 @@ class BaseParser(object):
             imgstart = articlecontent.find("<img", img_src_end)
             
         return img_list
-    
 
-    
     #得到正文内容
     def getText(self, articlecontent):
         if not articlecontent:
@@ -117,6 +114,21 @@ class BaseParser(object):
     #抽取出的信息项写入文件
     def writeInfoItem2File(self, info_item, file_handler):
         file_handler.write("[url]\n%s" % (info_item['url']))
-
+        
+    
+    @abstractmethod
+    def getArticle(self):
+        '''获取相应文章信息的接口
+                                        从urlPool中获取一个url，判断是否为未下载过的，从总抽取对应的信息
+            return map keys:url,title,text
+        '''
+        pass
+    
+    @abstractmethod
+    def initUrlPool(self, artType, start=None):
+        '''给定的信息，生成待获取url列表
+        '''
+        pass
+    
 
     
